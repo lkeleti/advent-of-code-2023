@@ -45,22 +45,28 @@ public class Service {
     public int partOne() {
         int sum = 0;
         for (ScratchCard scratchCard: scratchCards) {
-            int point = 0;
             for (int number: scratchCard.getWinnerNumbers()) {
                 if (scratchCard.getChosenNumber().contains(number)) {
-                    if (point == 0) {
-                        point = 1;
-                    } else {
-                        point = point * 2;
-                    }
+                    scratchCard.incNumberOfSame();
                 }
             }
-            sum += point;
+            sum += scratchCard.getPoints();
         }
         return sum;
     }
 
     public int partTwo() {
-        return 0;
+        for (int i = 0; i < scratchCards.size(); i++) {
+            ScratchCard defCard = scratchCards.get(i);
+            if (defCard.getNumberOfSame() > 0) {
+                for (int j = 1; j <=  defCard.getNumberOfSame(); j++) {
+                    scratchCards.get(i + j).incCardNumber(defCard.getCardNumber());
+                }
+            }
+        }
+        return scratchCards.stream()
+                .mapToInt(ScratchCard::getCardNumber)
+                .sum();
     }
+    //25228032 high
 }
