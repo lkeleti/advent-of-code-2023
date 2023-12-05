@@ -66,82 +66,74 @@ public class Service {
     }
 
     private long checkCollision() {
-        long sum = 0;
-        for (PartNumber part: partNumbers) {
-            boolean collide = false;
-            for (int i = 0; i < part.getLength(); i++) {
-                if (isCollide(part.getStartXPos() + i, part.getStartYPos())) {
-                    sum += part.getValue();
-                    break;
+        for (int i = 0; i < boardRowCount; i++) {
+            for (int j = 0; j < boardSize; j++) {
+                String sign = board.get(i).get(j);
+                if (!isNumeric(sign) && !sign.equals(".")) {
+                    isCollide(j,i);
                 }
+            }
+        }
+        System.out.println(partNumbers);
+        return countPartNumbers();
+    }
+
+    private int countPartNumbers() {
+        int sum = 0;
+        for (PartNumber partNumber: partNumbers) {
+            if (partNumber.isRealPart()) {
+                sum += partNumber.getValue();
             }
         }
         return sum;
     }
-    private boolean isCollide(int posX, int posY) {
+
+    private void isCollide(int posX, int posY) {
         //left
         if (posX > 0) {
-            String leftChar = board.get(posY).get(posX-1);
-            if (!isNumeric(leftChar) && !leftChar.equals(".")) {
-                return true;
-            }
+            checkPartNumbers(posX - 1, posY);
         }
 
         //right
         if (posX < boardSize) {
-            String rightChar = board.get(posY).get(posX+1);
-            if (!isNumeric(rightChar) && !rightChar.equals(".")) {
-                return true;
-            }
+            checkPartNumbers(posX + 1, posY);
         }
 
         //top
         if (posY > 0) {
-            String topChar = board.get(posY-1).get(posX);
-            if (!isNumeric(topChar) && !topChar.equals(".")) {
-                return true;
-            }
+            checkPartNumbers(posX, posY - 1);
         }
+
         //bottom
-        if (posY < boardRowCount-1) {
-            String bottomChar = board.get(posY+1).get(posX);
-            if (!isNumeric(bottomChar) && !bottomChar.equals(".")) {
-                return true;
-            }
+        if (posY < boardRowCount) {
+            checkPartNumbers(posX, posY + 1);
         }
 
         //top-left
         if (posY > 0 && posX > 0) {
-            String topLeftChar = board.get(posY-1).get(posX-1);
-            if (!isNumeric(topLeftChar) && !topLeftChar.equals(".")) {
-                return true;
-            }
+            checkPartNumbers(posX - 1, posY - 1);
         }
 
         //top-right
         if (posY > 0 && posX < boardSize) {
-            String topRightChar = board.get(posY-1).get(posX+1);
-            if (!isNumeric(topRightChar) && !topRightChar.equals(".")) {
-                return true;
-            }
+            checkPartNumbers(posX + 1, posY - 1);
         }
 
         //bottom-left
-        if (posY < boardRowCount-1 && posX > 0) {
-            String bottomLeftChar = board.get(posY+1).get(posX-1);
-            if (!isNumeric(bottomLeftChar) && !bottomLeftChar.equals(".")) {
-                return true;
-            }
+        if (posY < boardRowCount && posX > 0) {
+            checkPartNumbers(posX - 1, posY + 1);
         }
 
         //bottom-right
-        if (posY < boardRowCount-1 && posX < boardSize) {
-            String bottomRightChar = board.get(posY+1).get(posX+1);
-            if (!isNumeric(bottomRightChar) && !bottomRightChar.equals(".")) {
-                return true;
-            }
+        if (posY < boardRowCount && posX < boardSize) {
+            checkPartNumbers(posX + 1, posY + 1);
         }
-        return false;
+    }
+
+    public void checkPartNumbers(int posX, int posY) {
+        for (PartNumber partNumber: partNumbers) {
+            partNumber.isCollide(posX, posY);
+        }
     }
 
     public long partOne() {
@@ -152,4 +144,5 @@ public class Service {
         return 0;
     }
     //560570 low
+    //564167 high
 }
