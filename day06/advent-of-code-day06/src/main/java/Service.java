@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Service {
-    private List<Game> games = new ArrayList<>();
+    private final List<Game> games = new ArrayList<>();
     public void readInput(Path path) {
 
         try (BufferedReader br = Files.newBufferedReader(path)) {
@@ -31,10 +31,42 @@ public class Service {
     }
 
     public int partOne() {
-        System.out.println(games);
-        return 0;
+        int sum = 1;
+        for (Game game: games) {
+            sum *= countWays(game);
+        }
+        return sum;
     }
-    public int partTwo() {
-        return 0;
+
+    private int countWays(Game game) {
+        int distance = game.getDistance();
+        int time = game.getDuration();
+        int counter = 0;
+        for (int speed = 1; speed < time; speed++) {
+            int defDistance = speed * (time - speed);
+            if (defDistance > distance) {
+                counter++;
+            }
+        }
+        return counter;
+    }
+
+    public long partTwo() {
+        StringBuilder distancePart = new StringBuilder();
+        StringBuilder timePart = new StringBuilder();
+        for (Game game: games) {
+            distancePart.append(game.getDistance());
+            timePart.append(game.getDuration());
+        }
+        long distance = Long.parseLong(distancePart.toString());
+        long time = Long.parseLong(timePart.toString());
+        long counter = 0;
+        for (long speed = 1; speed < time; speed++) {
+            long defDistance = speed * (time - speed);
+            if (defDistance > distance) {
+                counter++;
+            }
+        }
+        return counter;
     }
 }
