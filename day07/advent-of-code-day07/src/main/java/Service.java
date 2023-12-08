@@ -3,12 +3,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.Collections;
 import java.util.List;
 
 public class Service {
 
     public List<Cards> games = new ArrayList<>();
+    public List<CardsWithJoker> gamesWithJokers = new ArrayList<>();
     public void readInput(Path path) {
 
         try (BufferedReader br = Files.newBufferedReader(path)) {
@@ -18,6 +19,9 @@ public class Service {
                 char[] cards = datas[0].toCharArray();
                 games.add(new Cards(cards, Integer.parseInt(datas[1])
                 ));
+
+                gamesWithJokers.add(new CardsWithJoker(cards, Integer.parseInt(datas[1])
+                ));
             }
         } catch (IOException ioe) {
             throw new IllegalStateException("Cannot read file: " + path);
@@ -25,17 +29,24 @@ public class Service {
     }
 
     public int partOne() {
-        games.sort(Comparator.comparing(Cards::getRank));
-        for (Cards card: games ) {
-            System.out.println(card.getRank());
+        Collections.sort(games);
+
+        int sum = 0;
+        for (int i = 0; i < games.size(); i++) {
+            sum += ((i + 1) * games.get(i).getBid());
         }
-        return games.stream().mapToInt(value -> value.getBid() * value.getRank())
-                .sum();
-        //1272011 low
+        return sum;
     }
 
     public int partTwo() {
-        return 0;
+        Collections.sort(gamesWithJokers);
+
+        int sum = 0;
+        for (int i = 0; i < gamesWithJokers.size(); i++) {
+            sum += ((i + 1) * gamesWithJokers.get(i).getBid());
+        }
+        return sum;
+        //252064423 low
     }
 
 }
