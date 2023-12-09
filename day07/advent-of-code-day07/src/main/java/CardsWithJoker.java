@@ -55,36 +55,40 @@ public class CardsWithJoker implements Comparable<CardsWithJoker> {
             numberOfJokers = cardsMap.get('J');
         }
 
-        if (cardsMap.keySet().size() == 5) {
-            this.rank = 0 + numberOfJokers;
-        }
+        if (numberOfJokers == 0) {
+            if (cardsMap.keySet().size() == 5) {
+                this.rank = 0;
+            }
 
-        long numberOfPairs = cardsMap.values().stream()
-                .filter(i -> i == 2)
-                .count();
+            long numberOfPairs = cardsMap.values().stream()
+                    .filter(i -> i == 2)
+                    .count();
 
-        if (numberOfPairs == 1) {
-            this.rank = 1 + numberOfJokers;
-        }
+            if (numberOfPairs == 1) {
+                this.rank = 1;
+            }
 
-        if (numberOfPairs == 2) {
-            this.rank = 2 + numberOfJokers;
-        }
+            if (numberOfPairs == 2) {
+                this.rank = 2;
+            }
 
-        if (cardsMap.containsValue(3) && !cardsMap.containsValue(2)) {
-            this.rank = 3 + numberOfJokers;
-        }
+            if (cardsMap.containsValue(3) && !cardsMap.containsValue(2)) {
+                this.rank = 3;
+            }
 
-        if (cardsMap.containsValue(3) && cardsMap.containsValue(2)) {
-            this.rank = 4 + numberOfJokers;
-        }
+            if (cardsMap.containsValue(3) && cardsMap.containsValue(2)) {
+                this.rank = 4;
+            }
 
-        if (cardsMap.containsValue(4)) {
-            this.rank = 5 + numberOfJokers;
-        }
+            if (cardsMap.containsValue(4)) {
+                this.rank = 5;
+            }
 
-        if (cardsMap.keySet().size() == 1) {
-            this.rank = 6;
+            if (cardsMap.keySet().size() == 1) {
+                this.rank = 6;
+            }
+        } else {
+            //least 1 joker in hand
         }
 
     }
