@@ -58,8 +58,21 @@ public class Service {
         return directions[(int)position];
     }
 
+    private long gcd(long a, long b) {
+        return b == 0? a:gcd(b, a % b);
+    }
+    private long leastCommonMultiplier(List<Long> arr, int idx) {
+        if (idx == arr.size() - 1){
+            return arr.get(idx);
+        }
+        long a = arr.get(idx);
+        long b = leastCommonMultiplier(arr, idx+1);
+        return (a*b/gcd(a,b)); //
+    }
+
     public long partTwo() {
         long counter = 0;
+        Map<Integer,Long> steps = new TreeMap<>();
         List<String> defNodes = new ArrayList<>();
         for (String node: nodes.keySet()) {
             if (node.endsWith("A")) {
@@ -79,17 +92,22 @@ public class Service {
                     defNode = nodes.get(defNode).getRight();
                 }
                 defNodes.set(i,defNode);
+                if (defNode.endsWith("Z")) {
+                    if (!steps.containsKey(i)) {
+                        steps.put(i, counter+1);
+                    }
+                }
             }
-                counter++;
+            counter++;
             long lastNodeCount = defNodes.stream().filter(n->n.endsWith("Z")).count();
             if (lastNodeCount > 3 ) {
                 System.out.println(counter);
             }
-            if( lastNodeCount == defNodes.size()) {
+            if(steps.keySet().size() == defNodes.size()) {
                 done = true;
             }
         }
-        //103194625
-        return counter;
+        return leastCommonMultiplier(steps.values().stream().toList(),0);
+        //13663968099527
     }
 }
