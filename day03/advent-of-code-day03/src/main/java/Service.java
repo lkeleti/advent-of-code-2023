@@ -49,6 +49,9 @@ public class Service {
                     number.append(c);
                 } else {
                     number.append(c);
+                    if (i == boardSize-1) {
+                        partNumbers.add(new PartNumber(Integer.parseInt(number.toString()),startPos, rowNumber));
+                    }
                 }
             } else {
                 if (startedNumeric) {

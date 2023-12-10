@@ -14,7 +14,7 @@ public class PartNumber {
         this.startXPos = startXPos;
         this.startYPos = startYPos;
         this.length = String.valueOf(value).length();
-        this.endXPos = startXPos + length;
+        this.endXPos = startXPos + length - 1;
     }
 
     public int getValue() {
