@@ -1,5 +1,4 @@
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 public class CardsWithJoker implements Comparable<CardsWithJoker> {
     private char[] cardsInHand = new char[5];
@@ -14,7 +13,7 @@ public class CardsWithJoker implements Comparable<CardsWithJoker> {
         cardValuesWithJoker.put('8', 6);
         cardValuesWithJoker.put('7', 7);
         cardValuesWithJoker.put('6', 8);
-        cardValuesWithJoker.put('5', 8);
+        cardValuesWithJoker.put('5', 9);
         cardValuesWithJoker.put('4', 10);
         cardValuesWithJoker.put('3', 11);
         cardValuesWithJoker.put('2', 12);
@@ -42,55 +41,95 @@ public class CardsWithJoker implements Comparable<CardsWithJoker> {
     }
 
     private void calcRank() {
-        Map<Character, Integer> cardsMap = new TreeMap<>();
+        int numberOfJokers = 0;
+        List<Character > cardsWithoutJoker = new ArrayList<>();
         for (char c: getCardsInHand()) {
+            if (c != 'J') {
+                cardsWithoutJoker.add(c);
+            } else {
+                numberOfJokers++;
+            }
+        }
+
+        Map<Character, Integer> cardsMap = new TreeMap<>();
+        for (char c: cardsWithoutJoker) {
             int value =1;
             if (cardsMap.containsKey(c)) {
                 value = cardsMap.get(c) + 1;
             }
             cardsMap.put(c,value);
         }
-        int numberOfJokers = 0;
-        if (cardsMap.containsKey('J')) {
-            numberOfJokers = cardsMap.get('J');
+        if (cardsMap.keySet().size() == 5) {
+            this.rank = 0;
+            //impossible with joker
         }
 
-        if (numberOfJokers == 0) {
-            if (cardsMap.keySet().size() == 5) {
-                this.rank = 0;
-            }
-
-            long numberOfPairs = cardsMap.values().stream()
-                    .filter(i -> i == 2)
-                    .count();
-
-            if (numberOfPairs == 1) {
-                this.rank = 1;
-            }
-
-            if (numberOfPairs == 2) {
-                this.rank = 2;
-            }
-
-            if (cardsMap.containsValue(3) && !cardsMap.containsValue(2)) {
-                this.rank = 3;
-            }
-
-            if (cardsMap.containsValue(3) && cardsMap.containsValue(2)) {
-                this.rank = 4;
-            }
-
-            if (cardsMap.containsValue(4)) {
-                this.rank = 5;
-            }
-
-            if (cardsMap.keySet().size() == 1) {
-                this.rank = 6;
-            }
-        } else {
-            //least 1 joker in hand
+        if (cardsMap.keySet().size() == 4 && numberOfJokers == 1) {
+            this.rank = 1;
         }
 
+        if (cardsMap.keySet().size() == 3 && numberOfJokers == 2) {
+            this.rank = 3;
+        }
+
+        if (cardsMap.keySet().size() == 2 && numberOfJokers == 3) {
+            this.rank = 5;
+        }
+
+        if (cardsMap.keySet().size() == 1 && numberOfJokers == 4) {
+            this.rank = 6;
+        }
+
+        long numberOfPairs = cardsMap.values().stream()
+                .filter(i -> i == 2)
+                .count();
+
+        if (numberOfPairs == 1) {
+            this.rank = 1;
+
+            switch (numberOfJokers) {
+                case 1:
+                    this.rank += 2;
+                    break;
+                case 2:
+                    this.rank += 4;
+                    break;
+                case 3:
+                    this.rank += 5;
+                    break;
+            }
+        }
+
+        if (numberOfPairs == 2) {
+            this.rank = 2;
+            if (numberOfJokers > 0 ) {
+                this.rank += 2;
+            }
+        }
+
+        if (cardsMap.containsValue(3) && !cardsMap.containsValue(2)) {
+            this.rank = 3;
+            if (numberOfJokers > 0) {
+                this.rank +=2;
+            }
+        }
+
+        if (cardsMap.containsValue(3) && cardsMap.containsValue(2)) {
+            this.rank = 4 + numberOfJokers;
+        }
+
+        if (cardsMap.containsValue(4)) {
+            this.rank = 5 + numberOfJokers;
+        }
+
+        if (cardsMap.keySet().size() == 1) {
+            this.rank = 6;
+        }
+
+        if (numberOfJokers == 5) {
+            this.rank = 6;
+        }
+        System.out.println(this.rank);
     }
 
     @Override
@@ -111,6 +150,5 @@ public class CardsWithJoker implements Comparable<CardsWithJoker> {
         } else {
             return rankOne-rankTwo;
         }
-
     }
 }

@@ -44,9 +44,11 @@ public class Service {
         int sum = 0;
         for (int i = 0; i < gamesWithJokers.size(); i++) {
             sum += ((i + 1) * gamesWithJokers.get(i).getBid());
+            System.out.println(gamesWithJokers.get(i).getCardsInHand());
         }
         return sum;
         //252064423 low
+        //251762042 low
     }
 
 }
