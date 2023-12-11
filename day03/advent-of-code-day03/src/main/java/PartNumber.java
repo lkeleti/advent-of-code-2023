@@ -61,4 +61,8 @@ public class PartNumber {
                 ", startYPos=" + startYPos +
                 '}';
     }
+
+    public void clearRealPart() {
+        this.realPart = false;
+    }
 }
