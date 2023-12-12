@@ -1,5 +1,3 @@
-import javax.management.loading.ClassLoaderRepository;
-import javax.swing.text.Position;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -31,24 +29,6 @@ public class Service {
     }
 
     private void findEmptySpaces() {
-
-        for (int i =0; i < board.size(); i++) {
-            if (board.get(i).stream()
-                    .filter(c->c=='.')
-                    .count() == board.get(i).size()) {
-                rowNumbers.add(i);
-            }
-        }
-
-        int counter = 0;
-        for (int rowNumber: rowNumbers) {
-            rowNumber += counter;
-            board.add(rowNumber, newSpaceRow());
-            counter++;
-        }
-    }
-
-    private void expandBoard() {
         for (int i = 0; i < board.getFirst().size(); i++) {
             boolean isSpace = true;
             for (List<Character> characters : board) {
@@ -61,24 +41,17 @@ public class Service {
             }
         }
 
-        for (int i = 0; i < board.size(); i++) {
-            int counter = 0;
-            for (int colNumber: colNumbers) {
-                board.get(i).add(colNumber + counter, '.');
-                counter++;
+        for (int i =0; i < board.size(); i++) {
+            if (board.get(i).stream()
+                    .filter(c->c=='.')
+                    .count() == board.get(i).size()) {
+                rowNumbers.add(i);
             }
         }
     }
 
-    private List<Character> newSpaceRow() {
-        List<Character> emptySpace = new ArrayList<>();
-        for (int i = 0; i < board.getFirst().size(); i++) {
-            emptySpace.add('.');
-        }
-        return emptySpace;
-    }
-
     private void findGalaxies(int expandValue) {
+        galaxies.clear();
         for (int i = 0; i < board.size(); i++) {
             for (int j = 0; j < board.getFirst().size(); j++) {
                 if (board.get(i).get(j) == '#') {
@@ -90,13 +63,23 @@ public class Service {
     }
 
     private Pos rebaseByExpand(int col, int row, int expandValue) {
-        Pos newPos;
-        //ToDo
-        return newPos;
+        int colCounter = 0;
+        int rowCounter = 0;
+        for (int rowNumber : rowNumbers) {
+            if (rowNumber < row) {
+                rowCounter++;
+            }
+        }
+        for (int colNumber : colNumbers) {
+            if (colNumber < col) {
+                colCounter++;
+            }
+        }
+        return new Pos(col + (colCounter * expandValue), row + (rowCounter * expandValue));
     }
 
-    private int calcAllDistances() {
-        int total = 0;
+    private long calcAllDistances() {
+        long total = 0;
         for (int i = 0; i < galaxies.size()-1; i++) {
             for (int j = i + 1; j < galaxies.size(); j++) {
                 total += galaxies.get(i).calcDistance(galaxies.get(j));
@@ -105,13 +88,14 @@ public class Service {
         return total;
     }
     public long partOne() {
-        expandBoard();
+        findEmptySpaces();
         findGalaxies(1);
         return calcAllDistances();
-        //9399144
+        //9647174
     }
 
     public long partTwo() {
-        return 0;
+        findGalaxies(1000000-1);
+        return calcAllDistances();
     }
 }
