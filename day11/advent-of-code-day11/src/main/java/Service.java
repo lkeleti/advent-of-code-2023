@@ -7,7 +7,8 @@ import java.util.List;
 
 public class Service {
 
-    private List<List<Character>> board = new ArrayList<>();
+    private final List<List<Character>> board = new ArrayList<>();
+    private final List<Pos> galaxies = new ArrayList<>();
     public void readInput(Path path) {
 
         try (BufferedReader br = Files.newBufferedReader(path)) {
@@ -45,10 +46,10 @@ public class Service {
             counter++;
         }
 
-        for (int i = 0; i < board.get(0).size(); i++) {
+        for (int i = 0; i < board.getFirst().size(); i++) {
             boolean isSpace = true;
-            for (int j = 0; j < board.size(); j++) {
-                if (board.get(j).get(i) != '.') {
+            for (List<Character> characters : board) {
+                if (characters.get(i) != '.') {
                     isSpace = false;
                 }
             }
@@ -68,18 +69,35 @@ public class Service {
 
     private List<Character> newSpaceRow() {
         List<Character> emptySpace = new ArrayList<>();
-        for (int i = 0; i < board.get(0).size(); i++) {
+        for (int i = 0; i < board.getFirst().size(); i++) {
             emptySpace.add('.');
         }
         return emptySpace;
     }
 
+    private void findGalaxies() {
+        for (int i = 0; i < board.size(); i++) {
+            for (int j = 0; j < board.getFirst().size(); j++) {
+                if (board.get(i).get(j) == '#') {
+                    galaxies.add(new Pos(j,i));
+                }
+            }
+        }
+    }
+
+    private int calcAllDistances() {
+        int total = 0;
+        for (int i = 0; i < galaxies.size()-1; i++) {
+            for (int j = i + 1; j < galaxies.size(); j++) {
+                total += galaxies.get(i).calcDistance(galaxies.get(j));
+            }
+        }
+        return total;
+    }
     public long partOne() {
         expandBoard();
-        for (List<Character> row : board) {
-            System.out.println(row);
-        }
-        return 0;
+        findGalaxies();
+        return calcAllDistances();
     }
 
     public long partTwo() {
