@@ -18,7 +18,9 @@ public class Service {
     public int partOne() {
         return 0;
     }
+
     public int partTwo() {
         return 0;
     }
+
 }

@@ -8,5 +8,6 @@ public class Main {
         System.out.println(service.partOne());
         System.out.println("Answer of part 2:");
         System.out.println(service.partTwo());
+
     }
 }
