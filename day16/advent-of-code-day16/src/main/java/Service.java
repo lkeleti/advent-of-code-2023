@@ -31,7 +31,7 @@ public class Service {
     }
 
     public int partOne() {
-        Cord defPos = new Cord(0,0);
+        Cord defPos = new Cord(-1,0);
         Cord defDirection = new Cord(1,0);
         startPositions.add(new Cord[] {defPos, defDirection});
 
@@ -62,16 +62,70 @@ public class Service {
             }
             startPositions.remove(defCords);
         }
-        return 0;
+        drawVisited();
+        return visited.size();
+        //6605 good answer
+    }
+
+    private void drawVisited() {
+        Character[][] b = new Character[rowNumber][colNumber];
+        for (int i = 0; i < colNumber; i++) {
+            for (int j = 0; j < rowNumber; j++) {
+                b[i][j] = '.';
+            }
+        }
+        for (Cord v: visited.keySet()) {
+            b[v.getPosY()][v.getPosX()] = '#';
+        }
+
+        for (Character[] row: b) {
+            System.out.println(Arrays.stream(row).toList());
+        }
     }
 
     private Cord checkSlash(Cord defPos, Cord defDirection) {
-        //ToDo
+        if (defDirection.getPosX() == 1) {
+            //right to up
+            return new Cord(0,-1);
+        }
+
+        if (defDirection.getPosX() == -1) {
+            //left to down
+            return new Cord(0,1);
+        }
+
+        if (defDirection.getPosY() == 1) {
+            //down to left
+            return new Cord(-1,0);
+        }
+
+        if (defDirection.getPosY() == -1) {
+            //up to right
+            return new Cord(1,0);
+        }
         return defDirection;
     }
 
     private Cord checkBackSlash(Cord defPos, Cord defDirection) {
-        //ToDo
+        if (defDirection.getPosX() == 1) {
+            //right to down
+            return new Cord(0,1);
+        }
+
+        if (defDirection.getPosX() == -1) {
+            //left to up
+            return new Cord(0,-1);
+        }
+
+        if (defDirection.getPosY() == 1) {
+            //down to right
+            return new Cord(1,0);
+        }
+
+        if (defDirection.getPosY() == -1) {
+            //up to left
+            return new Cord(-1,0);
+        }
         return defDirection;
     }
 
