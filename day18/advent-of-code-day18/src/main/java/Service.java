@@ -8,6 +8,7 @@ import java.util.List;
 public class Service {
     private List<Instruct> instructions = new ArrayList<>();
     private List<List<String>> board = new ArrayList<>();
+    private List<Cord> polygon = new ArrayList<>();
     public void readInput(Path path) {
 
         try (BufferedReader br = Files.newBufferedReader(path)) {
@@ -72,8 +73,7 @@ public class Service {
         for (Instruct i: instructions) {
             int direction = i.getDirection();
             int distance = i.getDistance();
-            int newX = defX;
-            int newY = defY;
+
             switch (direction) {
                 case 'U':
                     for (int step = 0; step <= distance; step++ ) {
@@ -106,11 +106,102 @@ public class Service {
             }
         }
     }
-    public int partOne() {
-        int[] result = findBoardSize();
-        createBoard(result);
-        drawBoard();
-        return 0;
+
+    private long calcArea() {
+        int i;
+        int j;
+
+        double area = 0.0;
+        for (i = 0; i < polygon.size()-1; i++) {
+            j = i+1;
+            area += ((polygon.get(i).getPosX()* polygon.get(j).getPosY()) - (polygon.get(j).getPosX()*polygon.get(i).getPosY()));
+        }
+        area /= 2.0;
+        return (long)Math.abs(area);
+    }
+
+    private long findPolygon() {
+        int startX = 0;
+        for (int i = 0; i < board.getFirst().size(); i++) {
+            if (!board.getFirst().get(i).equals(" ")) {
+                startX = i;
+                break;
+            }
+        }
+        polygon.add(new Cord(startX, 0));
+
+        int defX = 0;
+        int defY = 0;
+
+        Cord result = findNextPoint(startX,0);
+        defX = result.getPosX();
+        defY = result.getPosY();
+        polygon.add(new Cord(defX, defY));
+
+        while (!(defX == startX && defY == 0)) {
+            result = findNextPoint(defX, defY);
+            defX = result.getPosX();
+            defY = result.getPosY();
+            polygon.add(new Cord(defX, defY));
+        }
+        return calcArea();
+    }
+
+    private Cord findNextPoint(int defX, int defY) {
+        if (defX < board.getFirst().size()-1 && !board.get(defY).get(defX+1).equals(" ") && !polygon.contains(new Cord(defX+1, defY))) {
+            return new Cord(defX+1, defY);
+        }
+
+        if (defX > 0 && !board.get(defY).get(defX-1).equals(" ") && !polygon.contains(new Cord(defX-1, defY))) {
+            return new Cord(defX-1, defY);
+        }
+
+        if (defY < board.size()-1 && !board.get(defY+1).get(defX).equals(" ") && !polygon.contains(new Cord(defX, defY+1))) {
+            return new Cord(defX, defY+1);
+        }
+
+        if (defY > 0 && !board.get(defY-1).get(defX).equals(" ") && !polygon.contains(new Cord(defX, defY-1))) {
+            return new Cord(defX, defY-1);
+        }
+        return polygon.get(0);
+    }
+
+    private void createPolygon() {
+        int defX = 0;
+        int defY = 0;
+        polygon.add(new Cord(defX,defY));
+        for (Instruct i: instructions) {
+            int direction = i.getDirection();
+            int distance = i.getDistance();
+
+            switch (direction) {
+                case 'U':
+                    defY -= distance;
+                    break;
+                case 'D':
+                    defY+= distance;
+                    break;
+                case 'L':
+                    defX -= distance;
+                    break;
+                case 'R':
+                    defX += distance;
+                    break;
+            }
+            polygon.add(new Cord(defX,defY));
+        }
+    }
+    public long partOne() {
+        //int[] result = findBoardSize();
+        //createBoard(result);
+        //long area =findPolygon();
+        //drawBoard();
+        createPolygon();
+        long area = calcArea();
+
+
+        //32953 too low
+        return area;
     }
 
     private void drawBoard() {
