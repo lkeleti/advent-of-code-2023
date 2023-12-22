@@ -60,36 +60,54 @@ public class Service {
         workflows.add(wf);
     }
 
-    public void process() {
-        for (Workflow workflow: workflows) {
-            while (workflow.getStatus() == Status.PROGRESS) {
-                String defOperationName = workflow.getNextOperation();
-                OperationList operationList = operations.get(defOperationName);
-                boolean other = true;
-                for (Operation operation: operationList.getOperations()) {
-                    String name = operation.getName();
-                    int workflowValue = workflow.getOperationValue(name);
-                    if (operation.check(workflowValue)) {
-                        workflow.setNextOperation(operation.getNextIfTrue());
-                        other = false;
-                        break;
-                    }
+    public void process(Workflow workflow) {
+        while (workflow.getStatus() == Status.PROGRESS) {
+            String defOperationName = workflow.getNextOperation();
+            OperationList operationList = operations.get(defOperationName);
+            boolean other = true;
+            for (Operation operation : operationList.getOperations()) {
+                String name = operation.getName();
+                int workflowValue = workflow.getOperationValue(name);
+                if (operation.check(workflowValue)) {
+                    workflow.setNextOperation(operation.getNextIfTrue());
+                    other = false;
+                    break;
                 }
-                if (other) {
-                    workflow.setNextOperation(operationList.getOtherVise());
-                }
+            }
+            if (other) {
+                workflow.setNextOperation(operationList.getOtherVise());
             }
         }
     }
     public int partOne() {
-        process();
+        for (Workflow workflow: workflows) {
+            process(workflow);
+        }
         return workflows.stream()
                 .filter(w->w.getStatus() == Status.ACCEPTED)
                 .mapToInt(Workflow::getTotalValue)
                 .sum();
     }
 
-    public int partTwo() {
-        return 0;
+    public long partTwo() {
+        long totalAccepted = 0;
+        for (int x = 1; x <= 4000; x++) {
+            for (int m = 1; m <= 4000; m++) {
+                for (int a = 1; a <= 4000; a++) {
+                    for (int s = 1; s <= 4000; s++) {
+                        Workflow workflow = new Workflow();
+                        workflow.addOperation("x",x);
+                        workflow.addOperation("m",m);
+                        workflow.addOperation("a",a);
+                        workflow.addOperation("s",s);
+                        process(workflow);
+                        if (workflow.getStatus() == Status.ACCEPTED) {
+                            totalAccepted += 1;
+                        }
+                    }
+                }
+            }
+        }
+        return totalAccepted;
     }
 }
