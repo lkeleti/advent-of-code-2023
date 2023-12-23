@@ -90,7 +90,33 @@ public class Service {
     }
 
     public long partTwo() {
-        long totalAccepted = 0;
+        List<Node> nodes = new ArrayList<>();
+        List<Node> paths = new ArrayList<>();
+        nodes.add(new Node("in"));
+        while (!(nodes.size() == 0)) {
+            Node defNode = nodes.getFirst();
+            OperationList defOperationList = operations.get(defNode.getNextNode());
+            Node othervise = new Node(defOperationList.getOtherVise());
+            for (Operation operation: defOperationList.getOperations()) {
+                if (!operation.getNextIfTrue().equals("R")) {
+                    Node newNode = new Node(operation.getNextIfTrue());
+                    if (operation.getNextIfTrue().equals("A")) {
+                        //ToDo set from and to at othervise too
+                        paths.add(newNode);
+                    } else {
+                        //ToDo set from and to at othervise too
+                        nodes.add(newNode);
+                    }
+                }
+            }
+            if (othervise.getNextNode().equals("A")) {
+                paths.add(othervise);
+            } else if (!(othervise.getNextNode().equals("R"))) {
+                nodes.add(othervise);
+            }
+            nodes.remove(defNode);
+        }
+        /*long totalAccepted = 0;
         for (int x = 1; x <= 4000; x++) {
             for (int m = 1; m <= 4000; m++) {
                 for (int a = 1; a <= 4000; a++) {
@@ -108,6 +134,7 @@ public class Service {
                 }
             }
         }
-        return totalAccepted;
+        return totalAccepted;*/
+        return 0;
     }
 }
