@@ -1,84 +1,59 @@
-public class Node {
-    private int xFrom = 4000;
-    private int xTo = 4000;
-    private int mFrom = 4000;
-    private int mTo = 4000;
-    private int sFrom = 4000;
-    private int sTo = 4000;
-    private int aFrom = 4000;
-    private int aTo = 4000;
+import java.util.Map;
+import java.util.TreeMap;
 
+public class Node {
+
+    private final Map<String,Integer[]> parameters = new TreeMap<>();
     private String nextNode;
 
     public Node(String nextNode) {
         this.nextNode = nextNode;
-    }
-
-    public int getxFrom() {
-        return xFrom;
-    }
-
-    public void setxFrom(int xFrom) {
-        this.xFrom = xFrom;
-    }
-
-    public int getxTo() {
-        return xTo;
-    }
-
-    public void setxTo(int xTo) {
-        this.xTo = xTo;
-    }
-
-    public int getmFrom() {
-        return mFrom;
-    }
-
-    public void setmFrom(int mFrom) {
-        this.mFrom = mFrom;
-    }
-
-    public int getmTo() {
-        return mTo;
-    }
-
-    public void setmTo(int mTo) {
-        this.mTo = mTo;
-    }
-
-    public int getsFrom() {
-        return sFrom;
-    }
-
-    public void setsFrom(int sFrom) {
-        this.sFrom = sFrom;
-    }
-
-    public int getsTo() {
-        return sTo;
-    }
-
-    public void setsTo(int sTo) {
-        this.sTo = sTo;
-    }
-
-    public int getaFrom() {
-        return aFrom;
-    }
-
-    public void setaFrom(int aFrom) {
-        this.aFrom = aFrom;
-    }
-
-    public int getaTo() {
-        return aTo;
-    }
-
-    public void setaTo(int aTo) {
-        this.aTo = aTo;
+        parameters.put("x",new Integer[]{0,4001});
+        parameters.put("m",new Integer[]{0,4001});
+        parameters.put("a",new Integer[]{0,4001});
+        parameters.put("s",new Integer[]{0,4001});
     }
 
     public String getNextNode() {
         return nextNode;
+    }
+
+    public Integer getFrom(String name) {
+        return parameters.get(name)[0];
+    }
+
+    public Integer getTo(String name) {
+        return parameters.get(name)[1];
+    }
+    public void setFrom(String name, Integer value) {
+        if (value > parameters.get(name)[0]) {
+            parameters.get(name)[0] = value;
+        }
+    }
+
+    public void setTo(String name, Integer value) {
+        if (value < parameters.get(name)[1]) {
+            parameters.get(name)[1] = value;
+        }
+    }
+
+    public long getTotal() {
+        long total = 1;
+        for (String key: parameters.keySet()) {
+            total *= (parameters.get(key)[1] - parameters.get(key)[0]-2);
+        }
+        return total;
+    }
+
+    public void copyParametersFrom(Node defNode) {
+        setFrom("x", defNode.getFrom("x"));
+        setFrom("m", defNode.getFrom("m"));
+        setFrom("a", defNode.getFrom("a"));
+        setFrom("s", defNode.getFrom("s"));
+
+        setTo("x", defNode.getTo("x"));
+        setTo("m", defNode.getTo("m"));
+        setTo("a", defNode.getTo("a"));
+        setTo("s", defNode.getTo("s"));
     }
 }

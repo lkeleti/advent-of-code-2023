@@ -17,6 +17,14 @@ public class Operation {
         return name;
     }
 
+    public Character getSign() {
+        return sign;
+    }
+
+    public int getValue() {
+        return value;
+    }
+
     public String getNextIfTrue() {
         return nextIfTrue;
     }

@@ -100,11 +100,19 @@ public class Service {
             for (Operation operation: defOperationList.getOperations()) {
                 if (!operation.getNextIfTrue().equals("R")) {
                     Node newNode = new Node(operation.getNextIfTrue());
+                    newNode.copyParametersFrom(defNode);
+                    //ToDo getParameters from def and copy to new
+                    if (operation.getSign() == '<') {
+                        newNode.setTo(operation.getName(), operation.getValue());
+                        othervise.setFrom(operation.getName(), operation.getValue()-1);
+                    } else {
+                        newNode.setFrom(operation.getName(), operation.getValue());
+                        othervise.setTo(operation.getName(), operation.getValue()+1);
+                    }
+
                     if (operation.getNextIfTrue().equals("A")) {
-                        //ToDo set from and to at othervise too
                         paths.add(newNode);
                     } else {
-                        //ToDo set from and to at othervise too
                         nodes.add(newNode);
                     }
                 }
@@ -135,6 +143,8 @@ public class Service {
             }
         }
         return totalAccepted;*/
-        return 0;
+        return paths.stream()
+                .mapToLong(Node::getTotal)
+                .sum();
     }
 }
