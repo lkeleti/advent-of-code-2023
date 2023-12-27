@@ -56,4 +56,15 @@ public class Node {
         setTo("a", defNode.getTo("a"));
         setTo("s", defNode.getTo("s"));
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<String,Integer[]> parameter: parameters.entrySet()) {
+            sb.append(parameter.getValue()[0]).append("<").append(parameter.getKey()).append("<").append(parameter.getValue()[1]);
+            sb.append("\n");
+        }
+        sb.append("\n");
+        return sb.toString();
+    }
 }

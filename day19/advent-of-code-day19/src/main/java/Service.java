@@ -97,11 +97,27 @@ public class Service {
             Node defNode = nodes.getFirst();
             OperationList defOperationList = operations.get(defNode.getNextNode());
             Node othervise = new Node(defOperationList.getOtherVise());
+            boolean firstOp = true;
+            String prevName = "";
+            Character prevSign = '=';
+            int prevValue = 0;
             for (Operation operation: defOperationList.getOperations()) {
                 if (!operation.getNextIfTrue().equals("R")) {
                     Node newNode = new Node(operation.getNextIfTrue());
                     newNode.copyParametersFrom(defNode);
-                    //ToDo getParameters from def and copy to new
+                    if (firstOp) {
+                        prevName = operation.getName();
+                        prevSign = operation.getSign();
+                        prevValue = operation.getValue();
+                    } else {
+                        if (prevSign == '<') {
+                            newNode.setFrom(prevName, prevValue-1);
+                            othervise.setFrom(operation.getName(), prevValue+1);
+                        } else {
+                            newNode.setTo(prevName, prevValue+1);
+                            othervise.setTo(operation.getName(), operation.getValue()+1);
+                        }
+                    }
                     if (operation.getSign() == '<') {
                         newNode.setTo(operation.getName(), operation.getValue());
                         othervise.setFrom(operation.getName(), operation.getValue()-1);
@@ -116,6 +132,7 @@ public class Service {
                         nodes.add(newNode);
                     }
                 }
+                firstOp = false;
             }
             if (othervise.getNextNode().equals("A")) {
                 paths.add(othervise);
@@ -143,6 +160,7 @@ public class Service {
             }
         }
         return totalAccepted;*/
+        System.out.println(paths);
         return paths.stream()
                 .mapToLong(Node::getTotal)
                 .sum();

@@ -1,27 +1,27 @@
 import java.util.Objects;
 
 public class Direction {
-    private int nextCol;
-    private int nextRow;
+    private int posX;
+    private int posY;
 
-    public Direction(int nextCol, int nextRow) {
-        this.nextCol = nextCol;
-        this.nextRow = nextRow;
+    public Direction(int posX, int posY) {
+        this.posX = posX;
+        this.posY = posY;
     }
 
-    public int getNextCol() {
-        return nextCol;
+    public int getPosX() {
+        return posX;
     }
 
-    public int getNextRow() {
-        return nextRow;
+    public int getPosY() {
+        return posY;
     }
 
     @Override
     public String toString() {
         return "Direction{" +
-                "nextCol=" + nextCol +
-                ", nextRow=" + nextRow +
+                "posX=" + posX +
+                ", posY=" + posY +
                 '}';
     }
 
@@ -30,11 +30,11 @@ public class Direction {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Direction direction = (Direction) o;
-        return nextCol == direction.nextCol && nextRow == direction.nextRow;
+        return posX == direction.posX && posY == direction.posY;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(nextCol, nextRow);
+        return Objects.hash(posX, posY);
     }
 }

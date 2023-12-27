@@ -4,33 +4,21 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 public class Service {
-    private final static Map<Character, Direction> signs = new TreeMap<>();
-    private List<List<Direction>> surfaces = new ArrayList<>();
+    private final List<List<Character>> board = new ArrayList<>();
+
     private Direction start;
-    static {
-        signs.put('|', new Direction(0,1)); //n-s
-        signs.put('-', new Direction(-1,0)); //e-w
-        signs.put('L', new Direction(1,-1)); //n-e
-        signs.put('J', new Direction(0,-1)); //n-w
-        signs.put('7', new Direction(-1,1)); //s-w
-        signs.put('F', new Direction(1,1)); //s-e
-        signs.put('.', new Direction(0,0)); //ground
-        signs.put('S', new Direction(9,9)); //Start
-    }
     public void readInput(Path path) {
 
         try (BufferedReader br = Files.newBufferedReader(path)) {
             String line;
             while ((line = br.readLine()) != null) {
-                List<Direction> row = new ArrayList<>();
+                List<Character> row = new ArrayList<>();
                 for (char c: line.toCharArray()) {
-                    row.add(signs.get(c));
+                    row.add(c);
                 }
-                surfaces.add(row);
+                board.add(row);
             }
             findStart();
         } catch (IOException ioe) {
@@ -39,9 +27,9 @@ public class Service {
     }
 
     private void findStart() {
-        for (int i=0; i < surfaces.size(); i++) {
-            for (int j = 0; j < surfaces.get(0).size(); j++) {
-                if (surfaces.get(i).get(j).equals(new Direction(9,9))) {
+        for (int i=0; i < board.size(); i++) {
+            for (int j = 0; j < board.getFirst().size(); j++) {
+                if (board.get(i).get(j).equals('S')) {
                     start = new Direction(j,i);
                     System.out.println(start);
                     break;
@@ -50,7 +38,66 @@ public class Service {
         }
     }
 
+    private boolean isValidSign(Character dir, Character defSign, Character nextSign) {
+        if (dir == 'd') {
+            if (defSign == '|' && (nextSign == 'L' || nextSign == 'J')) {
+                return true;
+            }
+            if (defSign == '7' && (nextSign == 'L' || nextSign == 'J' || nextSign == '|')) {
+                return true;
+            }
+
+            if (defSign == 'F' && (nextSign == 'L' || nextSign == 'J' || nextSign == '|')) {
+                return true;
+            }
+        }
+
+        if (dir == 'u') {
+            if (defSign == '|' && (nextSign == '7' || nextSign == 'F')) {
+                return true;
+            }
+
+            if (defSign == 'L' && (nextSign == '7' || nextSign == 'F' || nextSign == '|')) {
+                return true;
+            }
+
+            if (defSign == 'J' && (nextSign == '7' || nextSign == 'F' || nextSign == '|')) {
+                return true;
+            }
+        }
+
+        if (dir == 'l') {
+            if (defSign == '-' && (nextSign == 'F' || nextSign == 'L')) {
+                return true;
+            }
+
+            if (defSign == '7' && (nextSign == 'F' || nextSign == 'L' || nextSign == '-')) {
+                return true;
+            }
+
+            if (defSign == 'J' && (nextSign == 'F' || nextSign == 'L' || nextSign == '-')) {
+                return true;
+            }
+        }
+
+        if (dir == 'r') {
+            if (defSign == '-' && (nextSign == '7' || nextSign == 'J')) {
+                return true;
+            }
+
+            if (defSign == 'F' && (nextSign == '7' || nextSign == 'J' || nextSign == '-')) {
+                return true;
+            }
+
+            if (defSign == 'L' && (nextSign == '7' || nextSign == 'J' || nextSign == '-')) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public long partOne() {
+        findStart();
         return 0;
     }
 
