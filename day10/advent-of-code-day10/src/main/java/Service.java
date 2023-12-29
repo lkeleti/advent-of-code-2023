@@ -31,100 +31,46 @@ public class Service {
             for (int j = 0; j < board.getFirst().size(); j++) {
                 if (board.get(i).get(j).equals('S')) {
                     start = new Cord(j,i);
-                    System.out.println(start);
                     break;
                 }
             }
         }
     }
 
-    private boolean isValidSign(Direction dir, Character defSign, Character nextSign) {
-        if (defSign == 'S') {
-            return true;
-        }
-        if (dir == Direction.DOWN) {
-            if (defSign == '|' && (nextSign == 'L' || nextSign == 'J')) {
-                return true;
-            }
-            if (defSign == '7' && (nextSign == 'L' || nextSign == 'J' || nextSign == '|')) {
-                return true;
-            }
-
-            if (defSign == 'F' && (nextSign == 'L' || nextSign == 'J' || nextSign == '|')) {
-                return true;
-            }
-        }
-
-        if (dir == Direction.UP) {
-            if (defSign == '|' && (nextSign == '7' || nextSign == 'F')) {
-                return true;
-            }
-
-            if (defSign == 'L' && (nextSign == '7' || nextSign == 'F' || nextSign == '|')) {
-                return true;
-            }
-
-            if (defSign == 'J' && (nextSign == '7' || nextSign == 'F' || nextSign == '|')) {
-                return true;
-            }
-        }
-
-        if (dir == Direction.LEFT) {
-            if (defSign == '-' && (nextSign == 'F' || nextSign == 'L')) {
-                return true;
-            }
-
-            if (defSign == '7' && (nextSign == 'F' || nextSign == 'L' || nextSign == '-')) {
-                return true;
-            }
-
-            if (defSign == 'J' && (nextSign == 'F' || nextSign == 'L' || nextSign == '-')) {
-                return true;
-            }
-        }
-
-        if (dir == Direction.RIGHT) {
-            if (defSign == '-' && (nextSign == '7' || nextSign == 'J')) {
-                return true;
-            }
-
-            if (defSign == 'F' && (nextSign == '7' || nextSign == 'J' || nextSign == '-')) {
-                return true;
-            }
-
-            if (defSign == 'L' && (nextSign == '7' || nextSign == 'J' || nextSign == '-')) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private void findPath() {
+    private int findPath() {
         List<Direction> directionList = new ArrayList<>();
         directionList.add(Direction.UP);
         directionList.add(Direction.DOWN);
         directionList.add(Direction.LEFT);
         directionList.add(Direction.RIGHT);
-        List<Integer> lenghts = new ArrayList<>();
+        List<Integer> lengths = new ArrayList<>();
 
         for (Direction defDir: directionList) {
             int counter = 0;
             Cord defCord = start;
             Cord nextCord;
             Direction nextDir;
-            while (defCord == start && counter > 0) {
-                nextDir = getNextCord(defCord, defDir);
+            while (!(defCord.equals(start) && counter > 0)) {
+                try {
+                    nextDir = getNextCord(defCord, defDir);
+                } catch (IllegalArgumentException iae) {
+                    counter = -1;
+                    break;
+                }
                 nextCord = defCord.add(nextDir);
-                if (isValidSign(defDir, board.get(defCord.getPosY()).get(defCord.getPosX()), board.get(nextCord.getPosY()).get(nextCord.getPosX()))) {
-                    defCord = nextCord;
-                } else {
+                defCord = nextCord;
+                defDir = nextDir;
+                if (nextCord.getPosX() < 0 || nextCord.getPosY() < 0 ) {
                     counter = -1;
                     break;
                 }
                 counter++;
             }
-            lenghts.add(counter);
+            lengths.add(counter);
         }
+        return lengths.stream()
+                .mapToInt(l-> l)
+                .max().getAsInt()/2;
     }
 
     private Direction getNextCord(Cord defCord, Direction defDir) {
@@ -133,14 +79,73 @@ public class Service {
         if (defSign =='S') {
             return defDir;
         }
-        //ToDO
-        return defDir;
+
+        if (defSign =='|') {
+            if (defDir == Direction.UP) {
+                return Direction.UP;
+            }
+
+            if (defDir == Direction.DOWN) {
+                return Direction.DOWN;
+            }
+        }
+
+        if (defSign =='-') {
+            if (defDir == Direction.LEFT) {
+                return Direction.LEFT;
+            }
+
+            if (defDir == Direction.RIGHT) {
+                return Direction.RIGHT;
+            }
+        }
+
+        if (defSign =='L') {
+            if (defDir == Direction.LEFT) {
+                return Direction.UP;
+            }
+
+            if (defDir == Direction.DOWN) {
+                return Direction.RIGHT;
+            }
+        }
+
+        if (defSign =='J') {
+            if (defDir == Direction.DOWN) {
+                return Direction.LEFT;
+            }
+
+            if (defDir == Direction.RIGHT) {
+                return Direction.UP;
+            }
+        }
+
+        if (defSign =='7') {
+            if (defDir == Direction.RIGHT) {
+                return Direction.DOWN;
+            }
+
+            if (defDir == Direction.UP) {
+                return Direction.LEFT;
+            }
+        }
+
+        if (defSign =='F') {
+            if (defDir == Direction.LEFT) {
+                return Direction.DOWN;
+            }
+
+            if (defDir == Direction.UP) {
+                return Direction.RIGHT;
+            }
+        }
+
+        throw new IllegalArgumentException("Impossible combination: " + defSign + " " + defDir + " " + defCord);
     }
 
     public long partOne() {
         findStart();
-        findPath();
-        return 0;
+        return findPath();
     }
 
     public long partTwo() {
