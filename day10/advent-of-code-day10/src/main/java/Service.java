@@ -8,7 +8,7 @@ import java.util.List;
 public class Service {
     private final List<List<Character>> board = new ArrayList<>();
 
-    private Direction start;
+    private Cord start;
     public void readInput(Path path) {
 
         try (BufferedReader br = Files.newBufferedReader(path)) {
@@ -30,7 +30,7 @@ public class Service {
         for (int i=0; i < board.size(); i++) {
             for (int j = 0; j < board.getFirst().size(); j++) {
                 if (board.get(i).get(j).equals('S')) {
-                    start = new Direction(j,i);
+                    start = new Cord(j,i);
                     System.out.println(start);
                     break;
                 }
@@ -38,8 +38,11 @@ public class Service {
         }
     }
 
-    private boolean isValidSign(Character dir, Character defSign, Character nextSign) {
-        if (dir == 'd') {
+    private boolean isValidSign(Direction dir, Character defSign, Character nextSign) {
+        if (defSign == 'S') {
+            return true;
+        }
+        if (dir == Direction.DOWN) {
             if (defSign == '|' && (nextSign == 'L' || nextSign == 'J')) {
                 return true;
             }
@@ -52,7 +55,7 @@ public class Service {
             }
         }
 
-        if (dir == 'u') {
+        if (dir == Direction.UP) {
             if (defSign == '|' && (nextSign == '7' || nextSign == 'F')) {
                 return true;
             }
@@ -66,7 +69,7 @@ public class Service {
             }
         }
 
-        if (dir == 'l') {
+        if (dir == Direction.LEFT) {
             if (defSign == '-' && (nextSign == 'F' || nextSign == 'L')) {
                 return true;
             }
@@ -80,7 +83,7 @@ public class Service {
             }
         }
 
-        if (dir == 'r') {
+        if (dir == Direction.RIGHT) {
             if (defSign == '-' && (nextSign == '7' || nextSign == 'J')) {
                 return true;
             }
@@ -96,8 +99,47 @@ public class Service {
         return false;
     }
 
+    private void findPath() {
+        List<Direction> directionList = new ArrayList<>();
+        directionList.add(Direction.UP);
+        directionList.add(Direction.DOWN);
+        directionList.add(Direction.LEFT);
+        directionList.add(Direction.RIGHT);
+        List<Integer> lenghts = new ArrayList<>();
+
+        for (Direction defDir: directionList) {
+            int counter = 0;
+            Cord defCord = start;
+            Cord nextCord;
+            Direction nextDir;
+            while (defCord == start && counter > 0) {
+                nextDir = getNextCord(defCord, defDir);
+                nextCord = defCord.add(nextDir);
+                if (isValidSign(defDir, board.get(defCord.getPosY()).get(defCord.getPosX()), board.get(nextCord.getPosY()).get(nextCord.getPosX()))) {
+                    defCord = nextCord;
+                } else {
+                    counter = -1;
+                    break;
+                }
+                counter++;
+            }
+            lenghts.add(counter);
+        }
+    }
+
+    private Direction getNextCord(Cord defCord, Direction defDir) {
+        Character defSign = board.get(defCord.getPosY()).get(defCord.getPosX());
+
+        if (defSign =='S') {
+            return defDir;
+        }
+        //ToDO
+        return defDir;
+    }
+
     public long partOne() {
         findStart();
+        findPath();
         return 0;
     }
 
