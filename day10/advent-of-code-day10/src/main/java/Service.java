@@ -7,6 +7,7 @@ import java.util.List;
 
 public class Service {
     private final List<List<Character>> board = new ArrayList<>();
+    private final List<Cord> possiblePath = new ArrayList<>();
 
     private Cord start;
     public void readInput(Path path) {
@@ -43,34 +44,39 @@ public class Service {
         directionList.add(Direction.DOWN);
         directionList.add(Direction.LEFT);
         directionList.add(Direction.RIGHT);
-        List<Integer> lengths = new ArrayList<>();
 
         for (Direction defDir: directionList) {
             int counter = 0;
             Cord defCord = start;
             Cord nextCord;
-            Direction nextDir;
+            Direction nextDir = null;
+            boolean goodTry = true;
             while (!(defCord.equals(start) && counter > 0)) {
                 try {
                     nextDir = getNextCord(defCord, defDir);
                 } catch (IllegalArgumentException iae) {
-                    counter = -1;
-                    break;
+                    goodTry = false;
+                    nextDir  = Direction.UP;
                 }
+
                 nextCord = defCord.add(nextDir);
-                defCord = nextCord;
-                defDir = nextDir;
-                if (nextCord.getPosX() < 0 || nextCord.getPosY() < 0 ) {
+                if (goodTry && !(nextCord.getPosX() < 0 || nextCord.getPosY() < 0 )) {
+                    defCord = nextCord;
+                    defDir = nextDir;
+                } else {
                     counter = -1;
+                    possiblePath.clear();
                     break;
                 }
+
+                possiblePath.add(defCord);
                 counter++;
             }
-            lengths.add(counter);
+            if (counter > 0) {
+                return counter/2;
+            }
         }
-        return lengths.stream()
-                .mapToInt(l-> l)
-                .max().getAsInt()/2;
+        throw new IllegalArgumentException("Cannot find right way!");
     }
 
     private Direction getNextCord(Cord defCord, Direction defDir) {
@@ -149,6 +155,22 @@ public class Service {
     }
 
     public long partTwo() {
-        return 0;
+        int counter = 0;
+        for (int y=0; y < board.size(); y++) {
+            boolean insideTheLoop = false;
+            for (int x = 0; x < board.getFirst().size(); x++) {
+                Character defSign = board.get(y).get(x);
+                Cord defCord = new Cord(x,y);
+
+                if (possiblePath.contains(defCord) && (defSign.equals('|') || defSign.equals('L') || defSign.equals('J') || defSign.equals('S'))) {
+                    insideTheLoop = !insideTheLoop;
+                }
+
+                if (!possiblePath.contains(defCord) && insideTheLoop) {
+                    counter++;
+                }
+            }
+        }
+        return counter;
     }
 }
