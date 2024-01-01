@@ -2,8 +2,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Service {
     private final List<List<Character>> board = new ArrayList<>();
@@ -33,8 +32,38 @@ public class Service {
         }
         throw new IllegalArgumentException("Cannot find start point!");
     }
+
     public int partOne() {
-        return 0;
+        Cord start = findStart();
+        Set<Cord> nextCords = new HashSet<>();
+        nextCords.add(start);
+        for (int i = 0; i < 64; i++) {
+            List<Cord> defCords = List.copyOf(nextCords);
+            nextCords.clear();
+            for (Cord c: defCords) {
+
+                Cord up = c.addDirection(Direction.UP);
+                if (up.getPosY() >=0 && !board.get(up.getPosY()).get(up.getPosX()).equals('#')) {
+                    nextCords.add(up);
+                }
+
+                Cord down = c.addDirection(Direction.DOWN);
+                if (down.getPosY() <= board.size() && !board.get(down.getPosY()).get(down.getPosX()).equals('#')) {
+                    nextCords.add(down);
+                }
+
+                Cord left = c.addDirection(Direction.LEFT);
+                if (left.getPosX() >= 0 && !board.get(left.getPosY()).get(left.getPosX()).equals('#')) {
+                    nextCords.add(left);
+                }
+
+                Cord right = c.addDirection(Direction.RIGHT);
+                if (right.getPosX() <= board.getFirst().size() && !board.get(right.getPosY()).get(right.getPosX()).equals('#')) {
+                    nextCords.add(right);
+                }
+            }
+        }
+        return nextCords.size();
     }
 
     public int partTwo() {
