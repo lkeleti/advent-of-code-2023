@@ -1,19 +1,27 @@
 import java.util.Objects;
 
 public class Cord {
-    private int posX;
-    private int posY;
+    private Long posX;
+    private Long posY;
 
-    public Cord(int posX, int posY) {
+    public Cord(Long posX, Long posY) {
         this.posX = posX;
         this.posY = posY;
     }
 
-    public int getPosX() {
+    public Integer getPosX() {
+        return posX.intValue();
+    }
+
+    public Integer getPosY() {
+        return posY.intValue();
+    }
+
+    public Long getPosXLong() {
         return posX;
     }
 
-    public int getPosY() {
+    public Long getPosYLong() {
         return posY;
     }
 
@@ -25,7 +33,7 @@ public class Cord {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Cord cord)) return false;
-        return getPosX() == cord.getPosX() && getPosY() == cord.getPosY();
+        return Objects.equals(getPosX(), cord.getPosX()) && Objects.equals(getPosY(), cord.getPosY());
     }
 
     @Override
@@ -39,5 +47,9 @@ public class Cord {
                 "posX=" + posX +
                 ", posY=" + posY +
                 '}';
+    }
+
+    public Cord interpolate(int boardWith, int boardHeight) {
+        return new Cord(Math.abs(posX % boardWith), Math.abs(posY % boardHeight));
     }
 }

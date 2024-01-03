@@ -1,6 +1,6 @@
 public enum Direction {
 
-    UP(new Cord(0,-1)),LEFT(new Cord(-1,0)),DOWN(new Cord(0,1)),RIGHT(new Cord(1,0));
+    UP(new Cord(0L,-1L)),LEFT(new Cord(-1L,0L)),DOWN(new Cord(0L,1L)),RIGHT(new Cord(1L,0L));
 
     private Cord cord;
 
