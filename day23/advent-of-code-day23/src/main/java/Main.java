@@ -1,4 +1,4 @@
-
+import java.nio.file.Path;
 
 public class Main {
     public static void main(String[] args) {
@@ -8,6 +8,5 @@ public class Main {
         System.out.println(service.partOne());
         System.out.println("Answer of part 2:");
         System.out.println(service.partTwo());
-
     }
 }
