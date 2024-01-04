@@ -18,6 +18,9 @@ public class Cord {
         return posY;
     }
 
+    public Cord addCord(Cord otherCord) {
+        return new Cord(posX + otherCord.getPosX(), posY + otherCord.getPosY());
+    }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -38,6 +38,30 @@ public class Service {
             }
         }
     }
+
+    private List<Cord> findNextMoves(Cord defPos) {
+        Cord up = defPos.addCord(Direction.UP.getCord());
+        Cord down = defPos.addCord(Direction.DOWN.getCord());
+        Cord left = defPos.addCord(Direction.LEFT.getCord());
+        Cord right = defPos.addCord(Direction.RIGHT.getCord());
+
+        List<Cord> directions = new ArrayList<>();
+        directions.add(up);
+        directions.add(down);
+        directions.add(left);
+        directions.add(right);
+
+        List<Cord> nextCords = new ArrayList<>();
+
+        for (Cord d: directions) {
+            if (d.getPosX() >= 0 && d.getPosX() < board.getFirst().size() &&
+                    d.getPosY() >= 0 && d.getPosY() < board.size() &&
+                    board.get(d.getPosY()).get(d.getPosX()) == '.') {
+                nextCords.add(d);
+            }
+        }
+        return nextCords;
+    }
     public long partOne() {
         return 0;
     }
