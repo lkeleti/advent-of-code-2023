@@ -3,7 +3,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class Service {
@@ -15,7 +14,7 @@ public class Service {
     private final List<Cord> nodes = new ArrayList<>();
     private final List<Edge> edges = new ArrayList<>();
 
-    private final List<List<Edge>> allPath = new ArrayList<>();
+    private int maxLength = -1;
     public void readInput(Path path) {
         try (BufferedReader br = Files.newBufferedReader(path)) {
             String line;
@@ -111,19 +110,26 @@ public class Service {
         }
     }
 
-    private void findPath(Cord defNode, List<Edge> path) {
+    private void findPath(Cord defNode, List<Edge> path, List<Cord> seen) {
         if (defNode.equals(nodes.getLast())) {
-            allPath.add(path);
+            maxLength = Math.max(maxLength,
+                    path.stream()
+                            .mapToInt(Edge::getLength)
+                            .sum()
+            );
             return;
         }
 
         for (Edge edge: edges) {
-            if (edge.getStartNode().equals(defNode)) {
-                if (!path.contains(edge)) {
-                    List<Edge> defPath = new ArrayList<>(path);
-                    defPath.add(edge);
-                    findPath(edge.getEndNode(), defPath);
-                }
+            if (edge.getStartNode().equals(defNode) &&
+                    !path.contains(edge) &&
+                    !seen.contains(edge.getEndNode())) {
+                List<Edge> defPath = new ArrayList<>(path);
+                defPath.add(edge);
+                List<Cord> defSeen = new ArrayList<>(seen);
+                defSeen.add(edge.getStartNode());
+                defSeen.add(edge.getEndNode());
+                findPath(edge.getEndNode(), defPath, defSeen);
             }
         }
     }
@@ -149,29 +155,21 @@ public class Service {
         findNodes(1);
         nodes.add(end);
         findAllEdges(1);
-        findPath(nodes.getFirst(), new ArrayList<>());
+        findPath(nodes.getFirst(), new ArrayList<>(), new ArrayList<>());
 
-        return allPath.stream()
-                .map(onePath->onePath.stream()
-                        .mapToInt(Edge::getLength).sum())
-                .mapToInt(Integer::intValue)
-                .max().getAsInt();
+        return maxLength;
     }
     public int partTwo() {
         nodes.clear();
         edges.clear();
-        allPath.clear();
+        maxLength = 0;
 
         nodes.add(start);
         findNodes(2);
         nodes.add(end);
         findAllEdges(2);
-        findPath(nodes.getFirst(), new ArrayList<>());
+        findPath(nodes.getFirst(), new ArrayList<>(), new ArrayList<>());
 
-        return allPath.stream()
-                .map(onePath->onePath.stream()
-                        .mapToInt(Edge::getLength).sum())
-                .mapToInt(Integer::intValue)
-                .max().getAsInt();
+        return maxLength;
     }
 }
