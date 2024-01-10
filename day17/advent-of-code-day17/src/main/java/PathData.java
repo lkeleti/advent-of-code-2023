@@ -1,6 +1,6 @@
 import java.util.Objects;
 
-public class PathData{
+public class PathData implements Comparable<PathData>{
     private int heatLost = 0;
 
     private Cord position = new Cord(0,0);
@@ -76,5 +76,16 @@ public class PathData{
     @Override
     public int hashCode() {
         return Objects.hash(getHeatLost(), getPosition(), getDirection(), getSteps());
+    }
+
+    @Override
+    public int compareTo(PathData o) {
+        if (this.heatLost != o.getHeatLost()) {
+            return Integer.compare(this.heatLost, o.getHeatLost());
+        } else if (this.position.getPosY() != o.getPosition().getPosY()) {
+            return Integer.compare(this.position.getPosY(), o.position.getPosY());
+        } else {
+            return Integer.compare(this.position.getPosX(), o.position.getPosX());
+        }
     }
 }

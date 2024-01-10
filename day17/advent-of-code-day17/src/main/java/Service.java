@@ -33,8 +33,8 @@ public class Service {
         allDirection.add(Dir.DOWN);
         allDirection.add(Dir.LEFT);
         allDirection.add(Dir.RIGHT);
-        Set<PathData> seen = new HashSet<>();
-        PriorityQueue<PathData> pq = new PriorityQueue<>(Comparator.comparingInt(PathData::getHeatLost));
+        Set<SeenElement> seen = new HashSet<>();
+        PriorityQueue<PathData> pq = new PriorityQueue<>();
         pq.add(new PathData());
 
         while (!pq.isEmpty()) {
@@ -46,19 +46,28 @@ public class Service {
 
             if (defElement.getPosition().getPosX() < 0 || defElement.getPosition().getPosX() >= boardWith ||
                     defElement.getPosition().getPosY() < 0 || defElement.getPosition().getPosY() >= boardHeight ||
-                    seen.contains(defElement)) {
+                    seen.contains(
+                            new SeenElement(
+                                    defElement.getPosition(),
+                                    defElement.getDirection(),
+                                    defElement.getSteps()
+                            )
+                    )) {
                 continue;
             }
 
-            seen.add(defElement);
+            seen.add(new SeenElement(
+                    defElement.getPosition(),
+                    defElement.getDirection(),
+                    defElement.getSteps()
+            ));
 
             if (defElement.getSteps() < 3 && !defElement.getDirection().equals(Dir.NONE)) {
                 Cord nextCord = defElement.getPosition().addDirection(defElement.getDirection());
 
                 if (0 <= nextCord.getPosX() &&  nextCord.getPosX() < boardWith &&
                         0 <= nextCord.getPosY() &&  nextCord.getPosY() < boardHeight &&
-                !seen.contains(new PathData(
-                        defElement.getHeatLost() + Integer.parseInt(String.valueOf(board.get(nextCord.getPosY()).get(nextCord.getPosX()))),
+                !seen.contains(new SeenElement(
                         nextCord,
                         defElement.getDirection(),
                         defElement.getSteps()+1))) {
