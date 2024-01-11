@@ -100,11 +100,97 @@ public class Service {
         return -1;
     }
 
+    private int solvePartTwo() {
+        List<Dir> allDirection = new ArrayList<>();
+        allDirection.add(Dir.UP);
+        allDirection.add(Dir.DOWN);
+        allDirection.add(Dir.LEFT);
+        allDirection.add(Dir.RIGHT);
+        Set<SeenElement> seen = new HashSet<>();
+        PriorityQueue<PathData> pq = new PriorityQueue<>();
+        pq.add(new PathData(
+                0,
+                new Cord(0,0),
+                Dir.DOWN,
+                0
+        ));
+
+        pq.add(new PathData(
+                0,
+                new Cord(0,0),
+                Dir.RIGHT,
+                0
+        ));
+
+        while (!pq.isEmpty()) {
+            PathData defElement = pq.poll();
+
+            if (defElement.getPosition().getPosX() == boardWith - 1 && defElement.getPosition().getPosY() == boardHeight - 1) {
+                return defElement.getHeatLost();
+            }
+
+            if (defElement.getPosition().getPosX() < 0 || defElement.getPosition().getPosX() >= boardWith ||
+                    defElement.getPosition().getPosY() < 0 || defElement.getPosition().getPosY() >= boardHeight ||
+                    seen.contains(
+                            new SeenElement(
+                                    defElement.getPosition(),
+                                    defElement.getDirection(),
+                                    defElement.getSteps()
+                            )
+                    )) {
+                continue;
+            }
+
+            seen.add(new SeenElement(
+                    defElement.getPosition(),
+                    defElement.getDirection(),
+                    defElement.getSteps()
+            ));
+
+            if (defElement.getSteps() < 11 && !defElement.getDirection().equals(Dir.NONE)) {
+                Cord nextCord = defElement.getPosition().addDirection(defElement.getDirection());
+
+                if (0 <= nextCord.getPosX() &&  nextCord.getPosX() < boardWith &&
+                        0 <= nextCord.getPosY() &&  nextCord.getPosY() < boardHeight &&
+                        !seen.contains(new SeenElement(
+                                nextCord,
+                                defElement.getDirection(),
+                                defElement.getSteps()+1))) {
+                    pq.add(new PathData(
+                            defElement.getHeatLost() + Integer.parseInt(String.valueOf(board.get(nextCord.getPosY()).get(nextCord.getPosX()))),
+                            nextCord,
+                            defElement.getDirection(),
+                            defElement.getSteps()+1
+                    ));
+                }
+            }
+
+            if (defElement.getSteps() > 4 && !defElement.getDirection().equals(Dir.NONE)) {
+                for (Dir nextDirection : allDirection) {
+                    if (!nextDirection.equals(defElement.getDirection()) &&
+                            !nextDirection.equals(defElement.getReverseDirection())) {
+                        Cord nextCord = defElement.getPosition().addDirection(nextDirection);
+
+                        if (0 <= nextCord.getPosX() && nextCord.getPosX() < boardWith &&
+                                0 <= nextCord.getPosY() && nextCord.getPosY() < boardHeight) {
+                            pq.add(new PathData(
+                                    defElement.getHeatLost() + Integer.parseInt(String.valueOf(board.get(nextCord.getPosY()).get(nextCord.getPosX()))),
+                                    nextCord,
+                                    nextDirection,
+                                    1
+                            ));
+                        }
+                    }
+                }
+            }
+        }
+        return -1;
+    }
     public int partOne() {
         return solvePartOne();
     }
 
     public int partTwo() {
-        return 0;
+        return solvePartTwo();
     }
 }
