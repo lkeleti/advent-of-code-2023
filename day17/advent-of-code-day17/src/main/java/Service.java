@@ -108,24 +108,13 @@ public class Service {
         allDirection.add(Dir.RIGHT);
         Set<SeenElement> seen = new HashSet<>();
         PriorityQueue<PathData> pq = new PriorityQueue<>();
-        pq.add(new PathData(
-                0,
-                new Cord(0,0),
-                Dir.DOWN,
-                0
-        ));
-
-        pq.add(new PathData(
-                0,
-                new Cord(0,0),
-                Dir.RIGHT,
-                0
-        ));
+        pq.add(new PathData());
 
         while (!pq.isEmpty()) {
             PathData defElement = pq.poll();
 
-            if (defElement.getPosition().getPosX() == boardWith - 1 && defElement.getPosition().getPosY() == boardHeight - 1) {
+            if (defElement.getPosition().getPosX() == boardWith - 1 && defElement.getPosition().getPosY() == boardHeight - 1 &&
+            defElement.getSteps() >= 4) {
                 return defElement.getHeatLost();
             }
 
@@ -147,25 +136,25 @@ public class Service {
                     defElement.getSteps()
             ));
 
-            if (defElement.getSteps() < 11 && !defElement.getDirection().equals(Dir.NONE)) {
+            if (defElement.getSteps() < 10 && !defElement.getDirection().equals(Dir.NONE)) {
                 Cord nextCord = defElement.getPosition().addDirection(defElement.getDirection());
 
-                if (0 <= nextCord.getPosX() &&  nextCord.getPosX() < boardWith &&
-                        0 <= nextCord.getPosY() &&  nextCord.getPosY() < boardHeight &&
+                if (0 <= nextCord.getPosX() && nextCord.getPosX() < boardWith &&
+                        0 <= nextCord.getPosY() && nextCord.getPosY() < boardHeight &&
                         !seen.contains(new SeenElement(
                                 nextCord,
                                 defElement.getDirection(),
-                                defElement.getSteps()+1))) {
+                                defElement.getSteps() + 1))) {
                     pq.add(new PathData(
                             defElement.getHeatLost() + Integer.parseInt(String.valueOf(board.get(nextCord.getPosY()).get(nextCord.getPosX()))),
                             nextCord,
                             defElement.getDirection(),
-                            defElement.getSteps()+1
+                            defElement.getSteps() + 1
                     ));
                 }
             }
 
-            if (defElement.getSteps() > 4 && !defElement.getDirection().equals(Dir.NONE)) {
+            if (defElement.getSteps() >= 4 || defElement.getDirection().equals(Dir.NONE)) {
                 for (Dir nextDirection : allDirection) {
                     if (!nextDirection.equals(defElement.getDirection()) &&
                             !nextDirection.equals(defElement.getReverseDirection())) {
@@ -192,5 +181,6 @@ public class Service {
 
     public int partTwo() {
         return solvePartTwo();
+        //875 low
     }
 }
