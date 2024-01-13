@@ -2,8 +2,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Service {
 
@@ -27,8 +26,41 @@ public class Service {
         }
     }
 
-    public int partOne() {
-        return 0;
+    private boolean isValidCondition(Condition condition) {
+        String[] springs = condition.getSprings().split("\\.");
+        List<String> springList = Arrays.stream(springs).filter(s->!s.isEmpty()).toList();
+        if (springList.size() != condition.getGroups().size()) {
+            return false;
+        }
+        for (int i = 0; i < springList.size(); i++) {
+            if (springList.get(i).length() != condition.getGroups().get(i)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private long solvePartOne() {
+        long result = 0;
+        for (Condition condition: conditions) {
+            List<List<String>> symbol = new ArrayList<>();
+            for (String s: condition.getSprings().split("")) {
+                if (s.equals("?")) {
+                    symbol.add(List.of("#", "."));
+                } else {
+                    symbol.add(List.of(s));
+                }
+            }
+
+            result += Itertools.getCartesianProduct(symbol).stream()
+                    .filter(p->isValidCondition(new Condition(String.join("",p),condition.getGroups())))
+                    .count();
+        }
+        return result;
+    }
+
+    public long partOne() {
+        return solvePartOne();
     }
 
     public int partTwo() {
