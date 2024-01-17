@@ -7,6 +7,7 @@ import java.util.*;
 public class Service {
 
     private final List<Condition> conditions = new ArrayList<>();
+    private final Map<MemoField,Long> memo = new HashMap<>();
     public void readInput(Path path) {
 
         try (BufferedReader br = Files.newBufferedReader(path)) {
@@ -42,28 +43,80 @@ public class Service {
 
     private long solvePartOne() {
         long result = 0;
-        for (Condition condition: conditions) {
+        for (Condition condition : conditions) {
+
             List<List<String>> symbol = new ArrayList<>();
-            for (String s: condition.getSprings().split("")) {
+            for (String s : condition.getSprings().split("")) {
                 if (s.equals("?")) {
                     symbol.add(List.of("#", "."));
                 } else {
                     symbol.add(List.of(s));
                 }
             }
-
-            result += Itertools.getCartesianProduct(symbol).stream()
-                    .filter(p->isValidCondition(new Condition(String.join("",p),condition.getGroups())))
+            long count = Itertools.getCartesianProduct(symbol).stream()
+                    .filter(p -> isValidCondition(new Condition(String.join("", p), condition.getGroups())))
                     .count();
+            result += count;
         }
         return result;
+    }
+
+    private long solvePartTwo() {
+        long result = 0;
+        for (Condition condition: conditions) {
+            List<Integer> newGroup = new ArrayList<>();
+            for (int i = 0; i < 5; i++) {
+                for (int g: condition.getGroups()) {
+                    newGroup.add(g);
+                }
+            }
+            Condition newCondition = new Condition(
+                    ((condition.getSprings() + "?").repeat(5)).substring(0,(condition.getSprings().length()*5)+4),
+                    newGroup
+            );
+
+            long count = countPermutations(newCondition.getSprings(),newCondition.getGroups(),0);
+            result += count;
+        }
+        return result;
+    }
+
+    private long countPermutations(String springs, List<Integer> groups, int groupLoc) {
+        if (springs.isEmpty()) {
+            return (groups.isEmpty() && groupLoc == 0) ? 1 : 0;
+        }
+        long results = 0;
+
+        List<String> possibilities = new ArrayList<>();
+        if (springs.charAt(0) == '?') {
+            possibilities.add(".");
+            possibilities.add("#");
+        } else {
+            possibilities.add(springs.substring(0,1));
+        }
+
+        for (String p: possibilities) {
+            if (p.equals("#")) {
+                results += countPermutations(springs.substring(1), groups, groupLoc + 1);
+            } else {
+                if (groupLoc > 0) {
+                    if (!groups.isEmpty() && groups.getFirst() == groupLoc) {
+                        results += countPermutations(springs.substring(1), groups.subList(1, groups.size()), 0);
+                    }
+                } else {
+                    results = results + countPermutations(springs.substring(1), groups, 0);
+                }
+
+            }
+        }
+        return results;
     }
 
     public long partOne() {
         return solvePartOne();
     }
 
-    public int partTwo() {
-        return 0;
+    public long partTwo() {
+        return solvePartTwo();
     }
 }
