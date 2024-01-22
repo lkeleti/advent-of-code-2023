@@ -7,7 +7,7 @@ import java.util.*;
 public class Service {
 
     private final List<Condition> conditions = new ArrayList<>();
-    private final Map<MemoField,Long> memo = new HashMap<>();
+    private final Map<MemoField,Long> memo = new Hashtable<>();
     public void readInput(Path path) {
 
         try (BufferedReader br = Files.newBufferedReader(path)) {
@@ -74,7 +74,7 @@ public class Service {
                     ((condition.getSprings() + "?").repeat(5)).substring(0,(condition.getSprings().length()*5)+4),
                     newGroup
             );
-
+            memo.clear();
             long count = countPermutations("." + newCondition.getSprings() + ".",newCondition.getGroups());
             result += count;
         }
@@ -82,10 +82,6 @@ public class Service {
     }
 
     private long countPermutations(String springs, List<Integer> groups) {
-        MemoField memoField = new MemoField(springs, groups);
-        if (memo.containsKey(memoField)) {
-            return memo.get(memoField);
-        }
 
         if (groups.isEmpty()){
             return springs.contains("#") ? 0: 1;
@@ -94,6 +90,11 @@ public class Service {
         int size = groups.getFirst();
         groups = groups.subList(1, groups.size());
 
+        MemoField memoField = new MemoField(springs, groups);
+        if (memo.containsKey(memoField)) {
+            return memo.get(memoField);
+        }
+
         long count = 0;
         for (int end = 0; end < springs.length(); end++) {
             int start = end - (size - 1);
@@ -101,8 +102,19 @@ public class Service {
                 count += countPermutations(springs.substring(end + 1), groups);
             }
         }
-        memo.put(new MemoField(springs, groups), count);
+        memo.put(new MemoField(springs,groups), count);
         return count;
+    }
+
+    private static void getKey(String springs, List<Integer> groups, List<Integer> memoInts) {
+        memoInts.clear();
+        for (int i: springs.toCharArray()) {
+            memoInts.add(i);
+        }
+
+        for (int i: groups) {
+            memoInts.add(i);
+        }
     }
 
     private boolean fits(String springs, int start, int end) {
