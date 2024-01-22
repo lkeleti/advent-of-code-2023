@@ -1,42 +1,40 @@
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
 public class MemoField {
-    private String symbols;
+    private String springs;
     private List<Integer> counts;
-    private int groupLoc;
 
-    public MemoField(String symbols, List<Integer> counts, int groupLoc) {
-        this.symbols = symbols;
+    public MemoField(String springs, List<Integer> counts) {
+        this.springs = springs;
         this.counts = counts;
-        this.groupLoc = groupLoc;
     }
 
-    public String getSymbols() {
-        return symbols;
+    public String getSprings() {
+        return springs;
     }
 
     public List<Integer> getCounts() {
         return counts;
     }
 
-    public int getGroupLoc() {
-        return groupLoc;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof MemoField memoField)) return false;
-        if (getGroupLoc() != ((MemoField) o).getGroupLoc()) {
+
+        if (!this.springs.equals(((MemoField) o).getSprings())) {
             return false;
         }
+
         if (getCounts().size() != ((MemoField) o).getCounts().size()) {
             return false;
         }
 
         for (int i = 0; i < getCounts().size(); i++) {
-            if (!Objects.equals(getCounts().get(i), ((MemoField) o).getCounts().get(i))) {
+            if (this.counts.get(i) != ((MemoField) o).getCounts().get(i)) {
                 return false;
             }
         }
@@ -45,6 +43,6 @@ public class MemoField {
 
     @Override
     public int hashCode() {
-        return Objects.hash(getSymbols(), getCounts(), getGroupLoc());
+        return Objects.hash(getSprings(), getCounts());
     }
 }

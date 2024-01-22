@@ -75,13 +75,58 @@ public class Service {
                     newGroup
             );
 
-            long count = countPermutations(newCondition.getSprings(),newCondition.getGroups(),0);
+            long count = countPermutations("." + newCondition.getSprings() + ".",newCondition.getGroups());
             result += count;
         }
         return result;
     }
 
-    private long countPermutations(String springs, List<Integer> groups, int groupLoc) {
+    private long countPermutations(String springs, List<Integer> groups) {
+        MemoField memoField = new MemoField(springs, groups);
+        if (memo.containsKey(memoField)) {
+            return memo.get(memoField);
+        }
+
+        if (groups.isEmpty()){
+            return springs.contains("#") ? 0: 1;
+        }
+
+        int size = groups.getFirst();
+        groups = groups.subList(1, groups.size());
+
+        long count = 0;
+        for (int end = 0; end < springs.length(); end++) {
+            int start = end - (size - 1);
+            if (fits(springs, start, end)) {
+                count += countPermutations(springs.substring(end + 1), groups);
+            }
+        }
+        memo.put(new MemoField(springs, groups), count);
+        return count;
+    }
+
+    private boolean fits(String springs, int start, int end) {
+        if (start -1 < 0 || end + 1 >= springs.length()) {
+            return false;
+        }
+
+        if (springs.charAt(start-1) == '#' || springs.charAt(end + 1) == '#') {
+            return false;
+        }
+
+        if (springs.substring(0, start).contains("#")) {
+            return false;
+        }
+
+        for (int i = start; i < end+1; i++) {
+            if (springs.charAt(i) == '.') {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /*private long countPermutations(String springs, List<Integer> groups, int groupLoc) {
         if (springs.isEmpty()) {
             return (groups.isEmpty() && groupLoc == 0) ? 1 : 0;
         }
@@ -110,7 +155,7 @@ public class Service {
             }
         }
         return results;
-    }
+    }*/
 
     public long partOne() {
         return solvePartOne();
