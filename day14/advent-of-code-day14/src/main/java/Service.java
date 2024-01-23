@@ -7,6 +7,7 @@ import java.util.*;
 public class Service {
 
     private final List<List<Character>> board = new ArrayList<>();
+    private int cycleLength;
 
     public void readInput(Path path) {
         try (BufferedReader br = Files.newBufferedReader(path)) {
@@ -51,9 +52,9 @@ public class Service {
             for (int i = 0; i < board.size(); i++) {
                 if (board.get(i).get(j) == 'O') {
                     for (int k = j - 1; k >=0; k--) {
-                        if (board.get(j).get(k) == '.') {
-                            board.get(j).set(k,'O');
-                            board.get(j).set(k+1,'.');
+                        if (board.get(i).get(k) == '.') {
+                            board.get(i).set(k,'O');
+                            board.get(i).set(k+1,'.');
                         } else {
                             break;
                         }
@@ -67,10 +68,10 @@ public class Service {
         for (int j = board.getFirst().size() -2; j >= 0; j--) {
             for (int i = 0; i < board.size(); i++) {
                 if (board.get(i).get(j) == 'O') {
-                    for (int k = j - 1; k >=0; k--) {
-                        if (board.get(j).get(k) == '.') {
-                            board.get(j).set(k,'O');
-                            board.get(j).set(k+1,'.');
+                    for (int k = j + 1; k < board.getFirst().size(); k++) {
+                        if (board.get(i).get(k) == '.') {
+                            board.get(i).set(k,'O');
+                            board.get(i).set(k-1,'.');
                         } else {
                             break;
                         }
@@ -111,16 +112,50 @@ public class Service {
         return total;
     }
 
-    public int partTwo() {
-        //tiltNorth();
-        drawBoard();
+    private void tilt() {
+        tiltNorth();
         tiltWest();
-        drawBoard();
         tiltSouth();
-        drawBoard();
         tiltEast();
+    }
 
-        drawBoard();
+    private int calcHash() {
+        StringBuilder line = new StringBuilder();
+        for (int i = board.size()-1; i >= 0; i--) {
+            for (int j = 0; j < board.getFirst().size(); j++) {
+                line.append(board.get(i).get(j));
+            }
+        }
+        return line.toString().hashCode();
+    }
+
+    private int findCycle() {
+        Map<Integer, Integer> boardHash = new HashMap<>();
+        int counter = 0;
+        while (true) {
+            tilt();
+            int hash = calcHash();
+            if (boardHash.containsKey(hash)) {
+                cycleLength = counter - boardHash.get(hash);
+                return counter;
+            } else {
+                boardHash.put(hash,counter);
+                counter++;
+            }
+        }
+    }
+
+    public int partTwo() {
+        int stepsToCycle = findCycle();
+        int spinsRemaining = 1_000_000_000 - stepsToCycle;
+        int fullCycles = spinsRemaining / cycleLength;
+        spinsRemaining -= (fullCycles * cycleLength);
+
+        while (spinsRemaining > 1) {
+            tilt();
+            spinsRemaining--;
+        }
+        //drawBoard();
         return calcWeight();
     }
 
