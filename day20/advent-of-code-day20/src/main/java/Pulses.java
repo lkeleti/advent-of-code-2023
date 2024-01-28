@@ -1,3 +1,3 @@
 public enum Pulses {
-    HIGH, LOW
+    HIGH, INIT, LOW
 }

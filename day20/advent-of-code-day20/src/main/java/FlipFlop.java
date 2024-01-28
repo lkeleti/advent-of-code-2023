@@ -53,4 +53,28 @@ public class FlipFlop implements LogicModule{
     public int getLow() {
         return low;
     }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public void resetCounter() {
+        low = 0;
+        high = 0;
+    }
+
+    @Override
+    public Object getType() {
+        return "FlipFlop";
+    }
+
+    @Override
+    public void reset() {
+        state = false;
+        low = 0;
+        high = 0;
+        inputPulses.clear();
+    }
 }

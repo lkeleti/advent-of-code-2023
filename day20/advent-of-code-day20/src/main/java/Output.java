@@ -1,27 +1,35 @@
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
 
-public class Button implements LogicModule{
+public class Output implements LogicModule{
+    private Pulses inputPulse;
     private String name;
-    private String output;
-
     private int low;
+    private int high;
+
+    public Output(String name) {
+        this.name = name;
+    }
 
     @Override
     public void setInput(String inputName, Pulses pulse) {
-        return;
+        inputPulse = pulse;
+    }
+
+
+    public Pulses getInputPulse() {
+        return inputPulse;
     }
 
     @Override
     public void execute(Map<String, LogicModule> logicModules, Queue<LogicModule> operationList) {
-        logicModules.get(output).setInput(name,Pulses.LOW);
-        operationList.add(logicModules.get(output));
-        low++;
+        return;
     }
 
     @Override
     public void addOutput(String outputName) {
-        output = outputName;
+        return;
     }
 
     @Override
@@ -36,13 +44,10 @@ public class Button implements LogicModule{
 
     @Override
     public int getHigh() {
-        return 0;
+        return high;
     }
 
-    public Button(String name) {
-        this.name = name;
-    }
-
+    @Override
     public String getName() {
         return name;
     }
@@ -50,15 +55,18 @@ public class Button implements LogicModule{
     @Override
     public void resetCounter() {
         low = 0;
+        high = 0;
     }
 
     @Override
     public Object getType() {
-        return "Button";
+        return "Output";
     }
 
     @Override
     public void reset() {
         low = 0;
+        high = 0;
+        inputPulse = Pulses.INIT;
     }
 }

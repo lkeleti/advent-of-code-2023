@@ -10,4 +10,14 @@ public interface LogicModule {
 
     int getLow();
     int getHigh();
+
+    String getName();
+
+    void resetCounter();
+
+    Object getType();
+
+    void reset();
+
+
 }

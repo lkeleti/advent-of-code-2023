@@ -3,7 +3,7 @@ import java.util.*;
 public class Conjunction implements LogicModule{
 
     private String name;
-    private final Map<String,Queue<Pulses>> inputPulses = new HashMap<>();
+    private final Map<String,Pulses> inputPulses = new HashMap<>();
     private final List<String> outputNames = new ArrayList<>();
 
     private int high = 0;
@@ -19,8 +19,8 @@ public class Conjunction implements LogicModule{
 
     private void updateState() {
         boolean status = true;
-        for (Map.Entry<String,Queue<Pulses>> entry: inputPulses.entrySet()) {
-            if (entry.getValue().isEmpty() || entry.getValue().peek().equals(Pulses.LOW)) {
+        for (Map.Entry<String,Pulses> entry: inputPulses.entrySet()) {
+            if (entry.getValue().equals(Pulses.INIT) || entry.getValue().equals(Pulses.LOW)) {
                 status = false;
                 break;
             }
@@ -30,10 +30,12 @@ public class Conjunction implements LogicModule{
     @Override
     public void setInput(String inputName, Pulses pulse) {
         if (!inputPulses.containsKey(inputName)) {
-            inputPulses.put(inputName, new ArrayDeque<>());
+            inputPulses.put(inputName, pulse);
         }
-        inputPulses.get(inputName).add(pulse);
-        updateState();
+        inputPulses.put(inputName, pulse);
+        if (pulse != Pulses.INIT) {
+            updateState();
+        }
     }
 
     @Override
@@ -59,8 +61,8 @@ public class Conjunction implements LogicModule{
 
     private boolean isAllHigh() {
         boolean isAllHigh = true;
-        for (Map.Entry<String,Queue<Pulses>> entry: inputPulses.entrySet()) {
-            if (entry.getValue().isEmpty() || entry.getValue().poll().equals(Pulses.LOW)) {
+        for (Map.Entry<String,Pulses> entry: inputPulses.entrySet()) {
+            if (entry.getValue().equals(Pulses.INIT) || entry.getValue().equals(Pulses.LOW)) {
                 isAllHigh = false;
             }
         }
@@ -80,5 +82,35 @@ public class Conjunction implements LogicModule{
     @Override
     public int getLow() {
         return low;
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public void resetCounter() {
+        low = 0;
+        high = 0;
+    }
+
+    @Override
+    public Object getType() {
+        return "Conjunction";
+    }
+
+    public Pulses getInput(String inputName) {
+        return inputPulses.get(inputName);
+    }
+
+    @Override
+    public void reset() {
+        low = 0;
+        high = 0;
+        state = false;
+        for (Pulses p: inputPulses.values()) {
+            p = Pulses.INIT;
+        }
     }
 }
