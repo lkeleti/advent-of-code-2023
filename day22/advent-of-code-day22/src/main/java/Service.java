@@ -7,7 +7,7 @@ import java.util.List;
 
 public class Service {
 
-    private final List<Cube> cubes = new ArrayList<>();
+    private List<Cube> cubes = new ArrayList<>();
     public void readInput(Path path) {
         try (BufferedReader br = Files.newBufferedReader(path)) {
             String line;
@@ -32,6 +32,7 @@ public class Service {
         }
     }
     public int partOne() {
+        cubes = cubes.stream().sorted().toList();
         return 0;
     }
 
