@@ -54,12 +54,26 @@ public class Cube implements Comparable<Cube>{
         return right;
     }
 
+    public void moveDown() {
+        start.setPosZ(start.getPosZ()-1);
+        end.setPosZ(end.getPosZ()-1);
+        bottom--;
+        top--;
+    }
+
+    public void moveUp() {
+        start.setPosZ(start.getPosZ()+1);
+        end.setPosZ(end.getPosZ()+1);
+        bottom++;
+        top++;
+    }
     public boolean isCollide(Cube otherCube) {
         boolean xCollision = right >= otherCube.getLeft() && left <= otherCube.getRight();
         boolean yCollision = top >= otherCube.getBottom() && bottom <= otherCube.getTop();
         boolean zCollision = front >= otherCube.getBack() && back <= otherCube.getFront();
 
         return xCollision && yCollision && zCollision;
+
     }
 
     @Override

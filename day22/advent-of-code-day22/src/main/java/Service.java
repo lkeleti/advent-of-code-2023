@@ -33,7 +33,32 @@ public class Service {
     }
     public int partOne() {
         cubes = cubes.stream().sorted().toList();
+        for (int i = 0; i < cubes.size(); i++) {
+            if (cubes.get(i).getBottom() > 1) {
+                boolean cycle = true;
+                while (cycle) {
+                    cubes.get(i).moveDown();
+                    if (collide()) {
+                        cubes.get(i).moveUp();
+                        cycle = false;
+                    } else if (cubes.get(i).getBottom() == 1) {
+                        cycle = false;
+                    }
+                }
+            }
+        }
         return 0;
+    }
+
+    private boolean collide() {
+        for(int i=0; i < cubes.size()-1; i++) {
+            for(int j = i + 1; j < cubes.size(); j++) {
+                if (cubes.get(i).isCollide(cubes.get(j))) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public int partTwo() {

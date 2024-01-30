@@ -21,4 +21,8 @@ public class Cord {
     public int getPosZ() {
         return posZ;
     }
+
+    public void setPosZ(int posZ) {
+        this.posZ = posZ;
+    }
 }
