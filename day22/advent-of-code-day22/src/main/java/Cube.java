@@ -1,6 +1,9 @@
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class Cube implements Comparable<Cube>{
+    private List<Cord> points = new ArrayList<>();
     private Cord start;
     private Cord end;
 
@@ -20,8 +23,23 @@ public class Cube implements Comparable<Cube>{
         left = Math.min(start.getPosX(), end.getPosX());
         back = Math.max(start.getPosY(), end.getPosY());
         front = Math.min(start.getPosY(), end.getPosY());
+        calcPoints();
     }
 
+    private void calcPoints() {
+        points.clear();
+        for (int i = left; i <= right; i++) {
+            for (int j = front; j <= back; j++) {
+                for (int k = bottom; k <= top; k++) {
+                    points.add(
+                            new Cord(
+                                    i,j,k
+                            )
+                    );
+                }
+            }
+        }
+    }
     public Cord getStart() {
         return start;
     }
@@ -50,6 +68,10 @@ public class Cube implements Comparable<Cube>{
         return left;
     }
 
+    public List<Cord> getPoints() {
+        return points;
+    }
+
     public int getRight() {
         return right;
     }
@@ -59,6 +81,7 @@ public class Cube implements Comparable<Cube>{
         end.setPosZ(end.getPosZ()-1);
         bottom--;
         top--;
+        calcPoints();
     }
 
     public void moveUp() {
@@ -66,14 +89,21 @@ public class Cube implements Comparable<Cube>{
         end.setPosZ(end.getPosZ()+1);
         bottom++;
         top++;
+        calcPoints();
     }
     public boolean isCollide(Cube otherCube) {
-        boolean xCollision = right >= otherCube.getLeft() && left <= otherCube.getRight();
-        boolean yCollision = top >= otherCube.getBottom() && bottom <= otherCube.getTop();
-        boolean zCollision = front >= otherCube.getBack() && back <= otherCube.getFront();
+        //boolean xCollision = right >= otherCube.getLeft() && left <= otherCube.getRight();
+        //boolean yCollision = top >= otherCube.getBottom() && bottom <= otherCube.getTop();
+        //boolean zCollision = front >= otherCube.getBack() && back <= otherCube.getFront();
 
-        return xCollision && yCollision && zCollision;
+        //return xCollision && yCollision && zCollision;
 
+        for (Cord point: points) {
+            if (otherCube.getPoints().contains(point)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
