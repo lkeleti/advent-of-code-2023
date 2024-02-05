@@ -2,8 +2,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Service {
 
@@ -31,15 +30,20 @@ public class Service {
             throw new IllegalStateException("Cannot read file: " + path, ioe);
         }
     }
-    public int partOne() {
-        cubes = cubes.stream().sorted().toList();
+
+    private int freeFall() {
+        cubes.sort(Comparator.comparingInt(Cube::getBottom));
+        //cubes = cubes.stream().sorted().toList();
+        int counter = 0;
         for (int i = 0; i < cubes.size(); i++) {
             if (cubes.get(i).getBottom() > 1) {
                 boolean cycle = true;
                 while (cycle) {
                     cubes.get(i).moveDown();
+                    counter++;
                     if (collide()) {
                         cubes.get(i).moveUp();
+                        counter--;
                         cycle = false;
                     } else if (cubes.get(i).getBottom() == 1) {
                         cycle = false;
@@ -47,7 +51,12 @@ public class Service {
                 }
             }
         }
-        return 0;
+        return counter;
+    }
+    public int partOne() {
+        freeFall();
+        int counter = 0;
+        return counter;
     }
 
     private boolean collide() {

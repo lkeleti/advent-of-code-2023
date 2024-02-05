@@ -100,10 +100,10 @@ public class Cube implements Comparable<Cube>{
 
         for (Cord point: points) {
             if (otherCube.getPoints().contains(point)) {
-                return false;
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
     @Override
